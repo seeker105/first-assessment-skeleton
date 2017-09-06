@@ -8,6 +8,8 @@ export const cli = vorpal()
 let username
 let server
 let servers = []
+let host
+let port
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -17,11 +19,14 @@ cli
   .delimiter(cli.chalk['green']('connected>'))
   .init(function (args, callback) {
     username = args.username
-    server = connect({ host: 'localhost', port: 8080 }, () => {
+    if (!args.host)
+      host = 'localhost'
+    if (!args.port)
+      port = 8080
+    server = connect({ host: host, port: port }, () => {
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
-    this.log(servers)
     servers.push(server)
     this.log(servers)
     server.on('data', (buffer) => {
