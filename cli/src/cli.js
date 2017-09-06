@@ -7,6 +7,7 @@ export const cli = vorpal()
 
 let username
 let server
+let servers = []
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
@@ -20,7 +21,9 @@ cli
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
-
+    this.log(servers)
+    servers.push(server)
+    this.log(servers)
     server.on('data', (buffer) => {
       this.log(Message.fromJSON(buffer).toString())
     })
