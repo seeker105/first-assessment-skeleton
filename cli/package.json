@@ -1,7 +1,7 @@
 {
   "name": "first-assessment-cli",
   "version": "1.0.0",
-  "description": "",
+  "description": "A basic CLI chat client",
   "main": "./dist/app.js",
   "scripts": {
     "build:watch": "webpack --colors --progress --watch",
@@ -30,7 +30,8 @@
     "webpack": "^1.13.2"
   },
   "dependencies": {
+    "7": "0.0.1",
     "lodash": "^4.16.4",
-    "vorpal": "^1.11.4"
+    "vorpal": "^1.12.0"
   }
 }
