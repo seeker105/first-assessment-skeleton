@@ -7,7 +7,7 @@ export const cli = vorpal()
 
 let username
 let server
-let servers = []
+let servers = {}
 let host
 let port
 
@@ -27,8 +27,9 @@ cli
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
-    servers.push(server)
+    servers[username] = server
     this.log(servers)
+    this.log('new server' + servers[username])
     server.on('data', (buffer) => {
       this.log(Message.fromJSON(buffer).toString())
     })
@@ -51,3 +52,10 @@ cli
 
     callback()
   })
+
+// cli.
+//   mode('broadcast')
+
+
+
+
