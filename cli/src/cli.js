@@ -10,6 +10,7 @@ let server
 let servers = {}
 let host
 let port
+let lastCommand
 
 cli
   .delimiter(cli.chalk['yellow']('ftd~$'))
