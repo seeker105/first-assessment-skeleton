@@ -45,6 +45,9 @@ cli
       server.end(new Message({ username, command }).toJSON() + '\n')
     } else if (command === 'echo') {
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (command === 'broadcast') {
+      cli.show()
+      cli.parse('broadcast')
     } else {
       this.log(`Command <${command}> was not recognized`)
     }
@@ -54,8 +57,9 @@ cli
 
 cli
   .mode('broadcast')
-  .delimiter(cli.chalk['cyan']('<' + username + '>'))
+  .delimiter(cli.chalk['cyan']('<broadcasting>'))
   .action(function (input, callback) {
+    this.log("broadcast activated")
     const [command, ...rest] = words(input)
     let contents = rest.join(' ')
     if (command === 'disconnect') {
@@ -64,17 +68,15 @@ cli
       server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
       contents = command + ' ' + contents 
-      for (let eachServer of servers) {
-        server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      }
+      // for (let eachServer of servers) {
+      //   server.write(new Message({ username, command, contents }).toJSON() + '\n')
+      // }
     }
   })
 
+cli.parse(process.argv)
 
+// cli
+//   .catch('[input...]', 'Catches non-command words')
+//   .parse(lastCommand + ' ' + input.join(' '))
 
-cli
-  .catch('[words...]', 'Catches incorrect commands')
-  .action(function (args, callback) {
-    this.log('Command <' + args.words[0] + '> was not recognized')
-    callback()
-  })
