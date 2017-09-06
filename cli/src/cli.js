@@ -28,8 +28,6 @@ cli
       callback()
     })
     servers[username] = server
-    this.log(servers)
-    this.log('new server' + servers[username])
     server.on('data', (buffer) => {
       this.log(Message.fromJSON(buffer).toString())
     })
@@ -53,9 +51,29 @@ cli
     callback()
   })
 
-// cli.
-//   mode('broadcast')
+cli
+  .mode('broadcast')
+  .delimiter(cli.chalk['cyan']('<' + username + '>'))
+  .action(function (input, callback) {
+    const [command, ...rest] = words(input)
+    let contents = rest.join(' ')
+    if (command === 'disconnect') {
+      server.end(new Message({ username, command }).toJSON() + '\n')
+    }  else if (command === 'echo') {
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else {
+      contents = command + ' ' + contents 
+      for (let eachServer of servers) {
+        server.write(new Message({ username, command, contents }).toJSON() + '\n')
+      }
+    }
+  })
 
 
 
-
+cli
+  .catch('[words...]', 'Catches incorrect commands')
+  .action(function (args, callback) {
+    this.log('Command <' + args.words[0] + '> was not recognized')
+    callback()
+  })
