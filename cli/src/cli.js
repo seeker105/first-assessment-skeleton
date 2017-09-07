@@ -12,7 +12,7 @@ let host
 let port
 let lastCommand
 let lastDelimiter
-let commandList = ['echo', 'broadcast', 'disconnect']
+let commandList = ['echo', 'broadcast', 'disconnect', 'users']
 let command
 let target
 
@@ -82,13 +82,16 @@ cli
     
     if (lastCommand === 'disconnect') {
       this.log('disconnect hit')
-      server.end(new Message({ username, lastCommand }).toJSON() + '\n')
+      server.end(new Message({ username, command: lastCommand }).toJSON() + '\n')
     } else if (lastCommand === 'echo'){
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.red(' (echo):'))
       server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')      
     } else if (lastCommand === 'broadcast') {
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.cyan(' (all):'))
       server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')    
+    } else if (lastCommand === 'users') {
+      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.magenta(` users:`))
+      server.write(new Message({ username, command: lastCommand }).toJSON() + '\n')    
     } else if (lastCommand === 'whisper') {
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.yellow(` (whisper):`))
       server.write(new Message({ username, command: lastCommand, contents, target: target }).toJSON() + '\n')    

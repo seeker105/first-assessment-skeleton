@@ -64,6 +64,20 @@ public class ChannelData {
 			e.printStackTrace();
 		}
 	}
+	
+	public String users(){
+		Set<String> usersSet = clients.keySet();
+		String userList = "currently connected users:\n";
+		
+		for (String s : usersSet){
+			userList = userList + "<" + s + ">\n";
+		}
+		return userList;
+	}
+	
+	public void removeUser(String username){
+		clients.remove(username);
+	}
 
 	public void addUser (String username, Socket socket){
 		this.clients.put(username, socket);

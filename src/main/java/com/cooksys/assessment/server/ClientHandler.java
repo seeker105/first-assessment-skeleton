@@ -48,6 +48,7 @@ public class ClientHandler implements Runnable {
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
+						channelData.removeUser(message.getUsername());
 						this.clientSocket.close();
 //						message.setCommand("testEndCondition");
 //						String testCommand = mapper.writeValueAsString(message);
@@ -76,6 +77,16 @@ public class ClientHandler implements Runnable {
 						String whisperMessage = mapper.writeValueAsString(message);
 						log.info("Calling whisper with message: " + whisperMessage);
 						channelData.whisper(whisperMessage);
+						break;
+					case "users":
+						log.info("user <{}> ClientHandler received user list request message >", message.getUsername());
+						String userList = channelData.users();
+						message.setContents(userList);
+						String usersRequest = mapper.writeValueAsString(message);
+						log.info("Sending users list in message: " + usersRequest);
+						clientWriter.write(usersRequest);
+						clientWriter.flush();						
+						break;
 				}
 			}
 
