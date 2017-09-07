@@ -81,7 +81,7 @@ public class ClientHandler implements Runnable {
 					case "users":
 						log.info("user <{}> ClientHandler received user list request message >", message.getUsername());
 						String userList = channelData.users();
-						message.setContents(message.getTimestamp() + ' ' + userList);
+						message.setContents(userList);
 						String usersRequest = mapper.writeValueAsString(message);
 						log.info("Sending users list in message: " + usersRequest);
 						clientWriter.write(usersRequest);
