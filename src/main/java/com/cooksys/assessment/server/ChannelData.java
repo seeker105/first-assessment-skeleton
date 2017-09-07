@@ -32,7 +32,6 @@ public class ChannelData {
 		
 		try {
 			message = mapper.readValue(raw, Message.class);
-			message.setCommand("echo");
 			String broadcastMessage = mapper.writeValueAsString(message);
 			for (Socket s : clients.values()){
 				tempWriter = new PrintWriter(new OutputStreamWriter(s.getOutputStream()));
@@ -53,7 +52,6 @@ public class ChannelData {
 		try {
 			message = mapper.readValue(raw, Message.class);
 			String target = message.getTarget();
-			message.setCommand("echo");
 			String whisperMessage = mapper.writeValueAsString(message);
 			targetSocket = clients.get(target);
 			tempWriter = new PrintWriter(new OutputStreamWriter(targetSocket.getOutputStream()));

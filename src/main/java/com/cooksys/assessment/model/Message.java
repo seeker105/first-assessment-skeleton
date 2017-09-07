@@ -6,6 +6,7 @@ public class Message {
 	private String command;
 	private String contents;
 	private String target;
+	private String timestamp;
 
 	public String getUsername() {
 		return username;
@@ -38,5 +39,14 @@ public class Message {
 	public void setTarget(String target) {
 		this.target = target;
 	}
+
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+	
 
 }

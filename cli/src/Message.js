@@ -3,11 +3,12 @@ export class Message {
     return new Message(JSON.parse(buffer.toString()))
   }
 
-  constructor ({ username, command, contents, target }) {
+  constructor ({ timestamp, username, command, contents, target }) {
     this.username = username
     this.command = command
     this.contents = contents
     this.target = target
+    this.timestamp = timestamp
   }
 
   toJSON () {
@@ -15,11 +16,12 @@ export class Message {
       username: this.username,
       command: this.command,
       contents: this.contents,
-      target: this.target
+      target: this.target,
+      timestamp: this.timestamp
     })
   }
 
   toString () {
-    return this.contents
+    return this.timestamp + ' <' + this.username + '> (' + this.command + ') ' +  this.contents
   }
 }

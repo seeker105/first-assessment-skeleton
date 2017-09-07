@@ -49,7 +49,7 @@ cli
     if (!args.port)
       port = 8080
     server = connect({ host: host, port: port }, () => {
-      server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
+      server.write(new Message({timestamp: getTime(), username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
     server.on('data', (buffer) => {
@@ -82,19 +82,19 @@ cli
     
     if (lastCommand === 'disconnect') {
       this.log('disconnect hit')
-      server.end(new Message({ username, command: lastCommand }).toJSON() + '\n')
+      server.end(new Message({ timestamp: getTime(), username, command: lastCommand }).toJSON() + '\n')
     } else if (lastCommand === 'echo'){
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.red(' (echo):'))
-      server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')      
+      server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents }).toJSON() + '\n')      
     } else if (lastCommand === 'broadcast') {
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.cyan(' (all):'))
-      server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')    
+      server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents }).toJSON() + '\n')    
     } else if (lastCommand === 'users') {
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.magenta(` users:`))
-      server.write(new Message({ username, command: lastCommand }).toJSON() + '\n')    
+      server.write(new Message({ timestamp: getTime(), username, command: lastCommand }).toJSON() + '\n')    
     } else if (lastCommand === 'whisper') {
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.yellow(` (whisper):`))
-      server.write(new Message({ username, command: lastCommand, contents, target: target }).toJSON() + '\n')    
+      server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents, target: target }).toJSON() + '\n')    
     }
     callback()
   })
