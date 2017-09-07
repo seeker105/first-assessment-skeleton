@@ -5,21 +5,44 @@ import { Message } from './Message'
 
 export const cli = vorpal()
 
+let argv = require('minimist')(process.argv.slice(2))
 let username
 let server
-let servers = {}
 let host
 let port
 let lastCommand
+let lastDelimiter
+let commandList = ['echo', 'broadcast', 'disconnect']
+let command
 
-cli
-  .delimiter(cli.chalk['yellow']('ftd~$'))
+const getTime = () => {
+  let d = new Date()
+  let h = d.getHours()
+  let m = d.getMinutes()
+  let s = d.getSeconds()
+  return '' + h + ':' + m + ':' + s
+}
+
+const parseInput = (input) => {
+  let [parsedCommand, ...rest] = words(input)
+  let parsedText = rest.join(' ')
+  if (commandList.indexOf(parsedCommand) > -1){
+    lastCommand = parsedCommand
+  } else {
+    parsedText = lastCommand + ' ' + parsedText
+  }
+  return parsedText
+}
+
+cli.delimiter(cli.chalk.yellow(cli.chalk.gray(`${getTime()} `) + 'ftd~$'))
 
 cli
   .mode('connect <username>')
-  .delimiter(cli.chalk['green']('connected>'))
+  .delimiter(' ')
   .init(function (args, callback) {
     username = args.username
+    lastDelimiter = cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`)
+    cli.delimiter(lastDelimiter)
     if (!args.host)
       host = 'localhost'
     if (!args.port)
@@ -28,55 +51,59 @@ cli
       server.write(new Message({ username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
-    servers[username] = server
     server.on('data', (buffer) => {
       this.log(Message.fromJSON(buffer).toString())
     })
-
     server.on('end', () => {
       cli.exec('exit')
     })
   })
   .action(function (input, callback) {
-    const [ command, ...rest ] = words(input)
-    const contents = rest.join(' ')
-
-    if (command === 'disconnect') {
-      server.end(new Message({ username, command }).toJSON() + '\n')
-    } else if (command === 'echo') {
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    } else if (command === 'broadcast') {
-      cli.show()
-      cli.parse('broadcast')
-    } else {
-      this.log(`Command <${command}> was not recognized`)
-    }
-
+    cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`))
+    let [...rest] = words(input)
+    let contents = rest.join(' ')
+    
+    if (lastCommand === 'disconnect') {
+      server.end(new Message({ username, lastCommand }).toJSON() + '\n')
+    } 
     callback()
   })
 
 cli
-  .mode('broadcast')
-  .delimiter(cli.chalk['cyan']('<broadcasting>'))
+  .mode('echo')
+  .delimiter(cli.chalk.red('(echo)'))
   .action(function (input, callback) {
-    this.log("broadcast activated")
-    const [command, ...rest] = words(input)
-    let contents = rest.join(' ')
+    const [ ...rest ] = words(input)
+    const command = 'echo'
+    const contents = rest.join(' ')
+
     if (command === 'disconnect') {
       server.end(new Message({ username, command }).toJSON() + '\n')
-    }  else if (command === 'echo') {
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
     } else {
-      contents = command + ' ' + contents 
-      // for (let eachServer of servers) {
-      //   server.write(new Message({ username, command, contents }).toJSON() + '\n')
-      // }
-    }
+      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    }  
+    callback()
   })
 
-cli.parse(process.argv)
+cli
+  .mode('test', 'test command')
+  .action(function (input, callback){
+    //do nothing
+    callback()
+  })
+  
+  cli
+  .mode('broadcast', 'sends message to all users')
+  .delimiter(cli.chalk['cyan']('(all)'))
+  .action(function(input, callback){
+    let [...rest] = words(input)
+    let command = 'broadcast'
+    let contents = rest.join(' ')
+    
+    server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    callback()
+  })
 
-// cli
-//   .catch('[input...]', 'Catches non-command words')
-//   .parse(lastCommand + ' ' + input.join(' '))
+
+
 

@@ -16,37 +16,57 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ClientHandler implements Runnable {
 	private Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
-	private Socket socket;
+	private Socket clientSocket;
+	private ChannelData channelData;
 
-	public ClientHandler(Socket socket) {
+	public ClientHandler(Socket clientSocket, ChannelData channelData) {
 		super();
-		this.socket = socket;
+		this.clientSocket = clientSocket;
+		this.channelData = channelData;
 	}
 
 	public void run() {
 		try {
 
 			ObjectMapper mapper = new ObjectMapper();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+			BufferedReader clientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			PrintWriter clientWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+//			BufferedReader channelReader = new BufferedReader(new InputStreamReader(channelSocket.getInputStream()));
+//			PrintWriter channelWriter = new PrintWriter(new OutputStreamWriter(channelData.getOutputStream()));
 
-			while (!socket.isClosed()) {
-				String raw = reader.readLine();
+			while (!clientSocket.isClosed()) {
+				String raw = clientReader.readLine();
 				Message message = mapper.readValue(raw, Message.class);
 
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
+						channelData.addUser(message.getUsername(), clientSocket);
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
-						this.socket.close();
+						this.clientSocket.close();
+//						message.setCommand("testEndCondition");
+//						String testCommand = mapper.writeValueAsString(message);
+//						channelWriter.write(testCommand);
+//						channelWriter.flush();
 						break;
 					case "echo":
 						log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
 						String response = mapper.writeValueAsString(message);
-						writer.write(response);
-						writer.flush();
+						clientWriter.write(response);
+						clientWriter.flush();
+						break;
+					case "broadcast":
+						log.info("user <{}> ClientHandler received broadcast message <{}>", message.getUsername(), message.getContents());
+						String broadcastMessage = mapper.writeValueAsString(message);
+						log.info("Calling broadcast with message: "  + broadcastMessage);
+						channelData.broadcast(broadcastMessage);
+//						log.info("Ready to write:" + broadcast);
+//						channelWriter.write(broadcast);
+//						log.info("Have written:" + broadcast);
+//						channelWriter.flush();
+//						log.info("Have flushed:" + broadcast);
 						break;
 				}
 			}
