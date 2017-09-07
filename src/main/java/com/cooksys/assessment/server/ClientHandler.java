@@ -44,16 +44,18 @@ public class ClientHandler implements Runnable {
 				switch (message.getCommand()) {
 					case "connect":
 						log.info("user <{}> connected", message.getUsername());
+						message.setContents("has connected");
+						String connectionAlert = mapper.writeValueAsString(message);
+						channelData.broadcast(connectionAlert);
 						channelData.addUser(message.getUsername(), clientSocket);
 						break;
 					case "disconnect":
 						log.info("user <{}> disconnected", message.getUsername());
 						channelData.removeUser(message.getUsername());
+						message.setContents("has disconnected");
+						String disconnectionAlert = mapper.writeValueAsString(message);
+						channelData.broadcast(disconnectionAlert);
 						this.clientSocket.close();
-//						message.setCommand("testEndCondition");
-//						String testCommand = mapper.writeValueAsString(message);
-//						channelWriter.write(testCommand);
-//						channelWriter.flush();
 						break;
 					case "echo":
 						log.info("user <{}> echoed message <{}>", message.getUsername(), message.getContents());
@@ -66,11 +68,6 @@ public class ClientHandler implements Runnable {
 						String broadcastMessage = mapper.writeValueAsString(message);
 						log.info("Calling broadcast with message: "  + broadcastMessage);
 						channelData.broadcast(broadcastMessage);
-//						log.info("Ready to write:" + broadcast);
-//						channelWriter.write(broadcast);
-//						log.info("Have written:" + broadcast);
-//						channelWriter.flush();
-//						log.info("Have flushed:" + broadcast);
 						break;
 					case "whisper":
 						log.info("user <{}> ClientHandler received whisper message <{}> for <{}>", message.getUsername(), message.getContents(), message.getTarget());

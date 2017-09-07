@@ -22,6 +22,15 @@ export class Message {
   }
 
   toString () {
-    return this.timestamp + ' <' + this.username + '> (' + this.command + ') ' +  this.contents
+    let commandSegment = ''
+    let usernameSegment = '<' + this.username + '> '
+    if ( ['echo', 'broadcast', 'whisper'].indexOf(this.command) > -1 ){
+      commandSegment = '(' + this.command + ') '
+    }
+    if (this.command === 'users'){
+      usernameSegment = ''
+    }
+
+    return this.timestamp + ' ' + usernameSegment + commandSegment + this.contents
   }
 }
