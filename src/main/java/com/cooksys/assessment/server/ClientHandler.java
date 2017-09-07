@@ -36,7 +36,10 @@ public class ClientHandler implements Runnable {
 
 			while (!clientSocket.isClosed()) {
 				String raw = clientReader.readLine();
+				log.info("Raw: " + raw);
 				Message message = mapper.readValue(raw, Message.class);
+				log.info("Message:" + message);
+				log.info("message.getCommand(): " + message.getCommand());
 
 				switch (message.getCommand()) {
 					case "connect":
