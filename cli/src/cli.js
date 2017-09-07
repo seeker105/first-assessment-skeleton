@@ -84,13 +84,6 @@ cli
     }  
     callback()
   })
-
-cli
-  .mode('test', 'test command')
-  .action(function (input, callback){
-    //do nothing
-    callback()
-  })
   
   cli
   .mode('broadcast', 'sends message to all users')
