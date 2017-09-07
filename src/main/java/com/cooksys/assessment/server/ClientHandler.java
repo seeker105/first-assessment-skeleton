@@ -71,6 +71,11 @@ public class ClientHandler implements Runnable {
 //						channelWriter.flush();
 //						log.info("Have flushed:" + broadcast);
 						break;
+					case "whisper":
+						log.info("user <{}> ClientHandler received whisper message <{}> for <{}>", message.getUsername(), message.getContents(), message.getTarget());
+						String whisperMessage = mapper.writeValueAsString(message);
+						log.info("Calling whisper with message: " + whisperMessage);
+						channelData.whisper(whisperMessage);
 				}
 			}
 

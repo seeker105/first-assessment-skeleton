@@ -60,13 +60,21 @@ cli
     })
   })
   .action(function (input, callback) {
-    let [command, ...rest] = words(input)
+    // this.log('input: ' + input)
+    let inputArray = input.split(' ')
+    // this.log('input array: ' + inputArray)
+    let command = inputArray[0]
+    // this.log('command: ' + command)
+    let rest = inputArray.slice(1)
+    // this.log('rest ' + rest)
     let contents = rest.join(' ')
+    // this.log('contents ' + contents)
     if (command.charAt(0) === '@') {
       lastCommand = 'whisper'
       target = command.slice(1)
+      // this.log('target' + target)
     } else if (commandList.indexOf(command) === -1) {
-      contents = command + contents
+      contents = command + ' ' + contents
     } else {
       lastCommand = command
     }
@@ -82,8 +90,8 @@ cli
       cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.cyan(' (all)'))
       server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')    
     } else if (lastCommand === 'whisper') {
-      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.blueBright(` (${target})`))
-      server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')    
+      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.yellow(` (${target})`))
+      server.write(new Message({ username, command: lastCommand, contents, target: target }).toJSON() + '\n')    
     }
     callback()
   })

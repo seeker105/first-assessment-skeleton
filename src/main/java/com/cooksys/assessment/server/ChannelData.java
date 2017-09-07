@@ -48,12 +48,17 @@ public class ChannelData {
 	public synchronized void whisper(String raw){
 		Message message = null;
 		PrintWriter tempWriter = null;
+		Socket targetSocket = null;
 		
 		try {
 			message = mapper.readValue(raw, Message.class);
+			String target = message.getTarget();
 			message.setCommand("echo");
-			String broadcastMessage = mapper.writeValueAsString(message);
-			
+			String whisperMessage = mapper.writeValueAsString(message);
+			targetSocket = clients.get(target);
+			tempWriter = new PrintWriter(new OutputStreamWriter(targetSocket.getOutputStream()));
+			tempWriter.write(whisperMessage);
+			tempWriter.flush();
 		} catch (IOException e) {
 			log.error("Error in ChannelData broadcast method");
 			e.printStackTrace();
