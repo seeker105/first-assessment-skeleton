@@ -59,43 +59,58 @@ cli
     })
   })
   .action(function (input, callback) {
-    cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`))
-    let [...rest] = words(input)
+    // cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`))
+    // cli.delimiter(lastDelimiter)
+    let [command, ...rest] = words(input)
     let contents = rest.join(' ')
+    if (commandList.indexOf(command) === -1){
+      contents = command + contents
+    } else {
+      lastCommand = command
+    }
+    
     
     if (lastCommand === 'disconnect') {
+      this.log('disconnect hit')
       server.end(new Message({ username, lastCommand }).toJSON() + '\n')
-    } 
-    callback()
-  })
-
-cli
-  .mode('echo')
-  .delimiter(cli.chalk.red('(echo)'))
-  .action(function (input, callback) {
-    const [ ...rest ] = words(input)
-    const command = 'echo'
-    const contents = rest.join(' ')
-
-    if (command === 'disconnect') {
-      server.end(new Message({ username, command }).toJSON() + '\n')
-    } else {
-      server.write(new Message({ username, command, contents }).toJSON() + '\n')
+    } else if (lastCommand === 'echo'){
+      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.red('(echo)'))
+      this.log('echo hit')
+      server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')      
+    } else if (lastCommand === 'broadcast') {
+      this.log('broadcast hit')
+      server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')    
     }  
     callback()
   })
+
+// cli
+//   .mode('echo')
+//   .delimiter(cli.chalk.red('(echo)'))
+//   .action(function (input, callback) {
+//     const [ ...rest ] = words(input)
+//     const command = 'echo'
+//     const contents = rest.join(' ')
+
+//     if (command === 'disconnect') {
+//       server.end(new Message({ username, command }).toJSON() + '\n')
+//     } else {
+//       server.write(new Message({ username, command, contents }).toJSON() + '\n')
+//     }  
+//     callback()
+//   })
   
-  cli
-  .mode('broadcast', 'sends message to all users')
-  .delimiter(cli.chalk['cyan']('(all)'))
-  .action(function(input, callback){
-    let [...rest] = words(input)
-    let command = 'broadcast'
-    let contents = rest.join(' ')
+  // cli
+  // .mode('broadcast', 'sends message to all users')
+  // .delimiter(cli.chalk['cyan']('(all)'))
+  // .action(function(input, callback){
+  //   let [...rest] = words(input)
+  //   let command = 'broadcast'
+  //   let contents = rest.join(' ')
     
-    server.write(new Message({ username, command, contents }).toJSON() + '\n')
-    callback()
-  })
+  //   server.write(new Message({ username, command, contents }).toJSON() + '\n')
+  //   callback()
+  // })
 
 
 
