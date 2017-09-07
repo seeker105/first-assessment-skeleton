@@ -14,6 +14,7 @@ let lastCommand
 let lastDelimiter
 let commandList = ['echo', 'broadcast', 'disconnect']
 let command
+let target
 
 const getTime = () => {
   let d = new Date()
@@ -59,11 +60,12 @@ cli
     })
   })
   .action(function (input, callback) {
-    // cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`))
-    // cli.delimiter(lastDelimiter)
     let [command, ...rest] = words(input)
     let contents = rest.join(' ')
-    if (commandList.indexOf(command) === -1){
+    if (command.charAt(0) === '@') {
+      lastCommand = 'whisper'
+      target = command.slice(1)
+    } else if (commandList.indexOf(command) === -1) {
       contents = command + contents
     } else {
       lastCommand = command
@@ -74,13 +76,15 @@ cli
       this.log('disconnect hit')
       server.end(new Message({ username, lastCommand }).toJSON() + '\n')
     } else if (lastCommand === 'echo'){
-      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.red('(echo)'))
-      this.log('echo hit')
+      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.red(' (echo)'))
       server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')      
     } else if (lastCommand === 'broadcast') {
-      this.log('broadcast hit')
+      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.cyan(' (all)'))
       server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')    
-    }  
+    } else if (lastCommand === 'whisper') {
+      cli.delimiter(cli.chalk.gray(`${getTime()} `) + cli.chalk.green(`<${username}>`) + cli.chalk.blueBright(` (${target})`))
+      server.write(new Message({ username, command: lastCommand, contents }).toJSON() + '\n')    
+    }
     callback()
   })
 
