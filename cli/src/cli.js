@@ -16,6 +16,15 @@ let commandList = ['echo', 'broadcast', 'disconnect', 'users']
 let command
 let target
 
+const colorTable = {
+  'connect': 'green',
+  'disconnect': 'gray',
+  'echo': 'red',
+  'broadcast': 'yellow',
+  'whisper': 'magenta',
+  'users': 'blue'
+}
+
 const getTime = () => {
   let d = new Date()
   let h = d.getHours()
@@ -53,6 +62,7 @@ cli
       callback()
     })
     server.on('data', (buffer) => {
+      // let msg =  
       this.log(Message.fromJSON(buffer).toString())
     })
     server.on('end', () => {
@@ -78,6 +88,12 @@ cli
     } else {
       lastCommand = command
     }
+    this.log(cli.chalk['red']('red'))
+    this.log(cli.chalk['green']('green'))
+    this.log(cli.chalk['yellow']('yellow'))
+    this.log(cli.chalk['blue']('blue'))
+    this.log(cli.chalk['magenta']('magenta'))
+    this.log(cli.chalk['gray']('gray'))
     
     
     if (lastCommand === 'disconnect') {
