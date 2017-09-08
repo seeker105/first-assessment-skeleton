@@ -20,9 +20,9 @@ const colorTable = {
   'connect': 'green',
   'disconnect': 'gray',
   'echo': 'red',
-  'broadcast': 'yellow',
-  'whisper': 'magenta',
-  'users': 'blue'
+  'broadcast': 'blue',
+  'whisper': 'yellow',
+  'users': 'magenta'
 }
 
 const getTime = () => {
@@ -62,8 +62,9 @@ cli
       callback()
     })
     server.on('data', (buffer) => {
-      // let msg =  
-      this.log(Message.fromJSON(buffer).toString())
+      let msg = Message.fromJSON(buffer)
+      let color = colorTable[msg.command]
+      this.log(cli.chalk[color](msg.toString()))
     })
     server.on('end', () => {
       cli.exec('exit')
@@ -88,13 +89,6 @@ cli
     } else {
       lastCommand = command
     }
-    this.log(cli.chalk['red']('red'))
-    this.log(cli.chalk['green']('green'))
-    this.log(cli.chalk['yellow']('yellow'))
-    this.log(cli.chalk['blue']('blue'))
-    this.log(cli.chalk['magenta']('magenta'))
-    this.log(cli.chalk['gray']('gray'))
-    
     
     if (lastCommand === 'disconnect') {
       this.log('disconnect hit')
