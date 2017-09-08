@@ -44,14 +44,14 @@ const parseInput = (input) => {
   return parsedText
 }
 
-cli.delimiter(cli.chalk.yellow('ftd~$ '))
+cli.delimiter(cli.chalk.yellow('ftd~$'))
 
 cli
   .mode('connect <username>')
   .delimiter(cli.chalk.green('connected> '))
   .init(function (args, callback) {
     username = args.username
-    lastDelimiter = cli.chalk.yellow('ftd~$ ') + cli.chalk.green(`<${username}>`)
+    lastDelimiter = cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`)
     cli.delimiter(lastDelimiter)
     if (!args.host)
       host = 'localhost'
@@ -91,19 +91,20 @@ cli
     }
     
     if (lastCommand === 'disconnect') {
-      this.log('disconnect hit')
+      // this.log('disconnect hit')
+      cli.delimiter(cli.chalk.yellow('ftd~$'))
       server.end(new Message({ timestamp: getTime(), username, command: lastCommand }).toJSON() + '\n')
     } else if (lastCommand === 'echo'){
-      cli.delimiter(cli.chalk.yellow('ftd~$ ') + cli.chalk.green(`<${username}>`) + cli.chalk.red(' (echo):'))
+      cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.red(' (echo):'))
       server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents }).toJSON() + '\n')      
     } else if (lastCommand === 'broadcast') {
-      cli.delimiter(cli.chalk.yellow('ftd~$ ') + cli.chalk.green(`<${username}>`) + cli.chalk.cyan(' (all):'))
+      cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.cyan(' (all):'))
       server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents }).toJSON() + '\n')    
     } else if (lastCommand === 'users') {
-      cli.delimiter(cli.chalk.yellow('ftd~$ ') + cli.chalk.green(`<${username}>`) + cli.chalk.magenta(` users:`))
+      cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.magenta(` users:`))
       server.write(new Message({ timestamp: getTime(), username, command: lastCommand }).toJSON() + '\n')    
     } else if (lastCommand === 'whisper') {
-      cli.delimiter(cli.chalk.yellow('ftd~$ ') + cli.chalk.green(`<${username}>`) + cli.chalk.yellow(` (whisper):`))
+      cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.yellow(` (whisper):`))
       server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents, target: target }).toJSON() + '\n')    
     }
     callback()
