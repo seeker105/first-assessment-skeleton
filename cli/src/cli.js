@@ -15,6 +15,7 @@ let lastDelimiter
 let commandList = ['echo', 'broadcast', 'disconnect', 'users']
 let command
 let target
+let contents
 
 const colorTable = {
   'connect': 'green',
@@ -33,16 +34,16 @@ const getTime = () => {
   return '' + h + ':' + m + ':' + s
 }
 
-const parseInput = (input) => {
-  let [parsedCommand, ...rest] = words(input)
-  let parsedText = rest.join(' ')
-  if (commandList.indexOf(parsedCommand) > -1){
-    lastCommand = parsedCommand
-  } else {
-    parsedText = lastCommand + ' ' + parsedText
-  }
-  return parsedText
-}
+// const parseInput = (input) => {
+//   let [parsedCommand, ...rest] = words(input)
+//   let parsedText = rest.join(' ')
+//   if (commandList.indexOf(parsedCommand) > -1){
+//     lastCommand = parsedCommand
+//   } else {
+//     parsedText = lastCommand + ' ' + parsedText
+//   }
+//   return parsedText
+// }
 
 cli.delimiter(cli.chalk.yellow('ftd~$'))
 
@@ -71,41 +72,37 @@ cli
     })
   })
   .action(function (input, callback) {
-    // this.log('input: ' + input)
     let inputArray = input.split(' ')
-    // this.log('input array: ' + inputArray)
-    let command = inputArray[0]
-    // this.log('command: ' + command)
     let rest = inputArray.slice(1)
-    // this.log('rest ' + rest)
-    let contents = rest.join(' ')
-    // this.log('contents ' + contents)
-    if (command.charAt(0) === '@') {
-      lastCommand = 'whisper'
-      target = command.slice(1)
-      // this.log('target' + target)
-    } else if (commandList.indexOf(command) === -1) {
-      contents = command + ' ' + contents
+    let firstWord = inputArray[0]
+    if (firstWord.charAt(0) === '@') {
+      target = firstWord.slice(1)
+      command = 'whisper'
+      contents = rest.join(' ')
+    } else if (commandList.indexOf(firstWord) > -1) {
+      command = firstWord
+      contents = rest.join(' ')
     } else {
-      lastCommand = command
+      contents = inputArray.join(' ')
     }
-    
-    if (lastCommand === 'disconnect') {
-      // this.log('disconnect hit')
+      
+    if (command === 'disconnect') {
       cli.delimiter(cli.chalk.yellow('ftd~$'))
-      server.end(new Message({ timestamp: getTime(), username, command: lastCommand }).toJSON() + '\n')
-    } else if (lastCommand === 'echo'){
+      server.end(new Message({ timestamp: getTime(), username, command: command }).toJSON() + '\n')
+    } else if (command === 'echo'){
       cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.red(' (echo):'))
-      server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents }).toJSON() + '\n')      
-    } else if (lastCommand === 'broadcast') {
+      server.write(new Message({ timestamp: getTime(), username, command: command, contents }).toJSON() + '\n')      
+    } else if (command === 'broadcast') {
       cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.cyan(' (all):'))
-      server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents }).toJSON() + '\n')    
-    } else if (lastCommand === 'users') {
+      server.write(new Message({ timestamp: getTime(), username, command: command, contents }).toJSON() + '\n')    
+    } else if (command === 'users') {
       cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.magenta(` users:`))
-      server.write(new Message({ timestamp: getTime(), username, command: lastCommand }).toJSON() + '\n')    
-    } else if (lastCommand === 'whisper') {
+      server.write(new Message({ timestamp: getTime(), username, command: command }).toJSON() + '\n')    
+    } else if (command === 'whisper') {
       cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`) + cli.chalk.yellow(` (whisper):`))
-      server.write(new Message({ timestamp: getTime(), username, command: lastCommand, contents, target: target }).toJSON() + '\n')    
+      server.write(new Message({ timestamp: getTime(), username, command: command, contents, target: target }).toJSON() + '\n')    
+    } else {
+      this.log(`That was an invalid command. Commands from this mode are: 'echo', 'broadcast', 'disconnect', 'users'`)
     }
     callback()
   })
