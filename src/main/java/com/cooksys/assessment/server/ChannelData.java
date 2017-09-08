@@ -88,9 +88,5 @@ public class ChannelData {
 	public Socket getSocket(String username){
 		return this.clients.get(username);
 	}
-	
-	public boolean isEmpty(){
-		return this.clients.isEmpty();
-	}
 
 }

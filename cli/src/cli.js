@@ -10,8 +10,6 @@ let username
 let server
 let host
 let port
-let lastCommand
-let lastDelimiter
 let commandList = ['echo', 'broadcast', 'disconnect', 'users']
 let command
 let target
@@ -34,17 +32,6 @@ const getTime = () => {
   return '' + h + ':' + m + ':' + s
 }
 
-// const parseInput = (input) => {
-//   let [parsedCommand, ...rest] = words(input)
-//   let parsedText = rest.join(' ')
-//   if (commandList.indexOf(parsedCommand) > -1){
-//     lastCommand = parsedCommand
-//   } else {
-//     parsedText = lastCommand + ' ' + parsedText
-//   }
-//   return parsedText
-// }
-
 cli.delimiter(cli.chalk.yellow('ftd~$'))
 
 cli
@@ -52,13 +39,15 @@ cli
   .delimiter(cli.chalk.green('connected> '))
   .init(function (args, callback) {
     username = args.username
-    lastDelimiter = cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`)
-    cli.delimiter(lastDelimiter)
+    cli.delimiter(cli.chalk.yellow('ftd~$') + cli.chalk.green(` <${username}>`))
     if (!args.host)
       host = 'localhost'
     if (!args.port)
       port = 8080
     server = connect({ host: host, port: port }, () => {
+      command = undefined
+      target = undefined
+      contents = undefined
       server.write(new Message({timestamp: getTime(), username, command: 'connect' }).toJSON() + '\n')
       callback()
     })
@@ -106,35 +95,3 @@ cli
     }
     callback()
   })
-
-// cli
-//   .mode('echo')
-//   .delimiter(cli.chalk.red('(echo)'))
-//   .action(function (input, callback) {
-//     const [ ...rest ] = words(input)
-//     const command = 'echo'
-//     const contents = rest.join(' ')
-
-//     if (command === 'disconnect') {
-//       server.end(new Message({ username, command }).toJSON() + '\n')
-//     } else {
-//       server.write(new Message({ username, command, contents }).toJSON() + '\n')
-//     }  
-//     callback()
-//   })
-  
-  // cli
-  // .mode('broadcast', 'sends message to all users')
-  // .delimiter(cli.chalk['cyan']('(all)'))
-  // .action(function(input, callback){
-  //   let [...rest] = words(input)
-  //   let command = 'broadcast'
-  //   let contents = rest.join(' ')
-    
-  //   server.write(new Message({ username, command, contents }).toJSON() + '\n')
-  //   callback()
-  // })
-
-
-
-

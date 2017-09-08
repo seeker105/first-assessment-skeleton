@@ -23,32 +23,7 @@ public class Server implements Runnable {
 	public void run() {
 		log.info("server started");
 		ServerSocket ss=null;
-//		Socket channelSocket = null;
-//		ChannelManager channelManager = null;
 		ChannelData channelData = new ChannelData();
-//		Integer channelPort = 8081;
-		
-		
-//		channelManager = new ChannelManager(channelData, channelPort);
-//		channelManager.start();
-		
-//		try {
-//			Thread.sleep(2000);
-//		} catch (InterruptedException e1) {
-//			log.error("Something went wrong in sleeping() the Server:/", e1);
-//			e1.printStackTrace();
-//		}
-
-//		try {
-//			channelSocket = new Socket("127.0.0.1", channelPort);
-//			if (channelSocket != null) {
-//				log.info("ChannelManager connected");
-//			}
-//		} catch (IOException e1) {
-//			log.error("Something went wrong in the Server's attempt to connect to the ChannelManager:/", e1);
-//			e1.printStackTrace();
-//		}
-		
 		
 		try {
 			ss = new ServerSocket(this.port);

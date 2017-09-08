@@ -31,8 +31,6 @@ public class ClientHandler implements Runnable {
 			ObjectMapper mapper = new ObjectMapper();
 			BufferedReader clientReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			PrintWriter clientWriter = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-//			BufferedReader channelReader = new BufferedReader(new InputStreamReader(channelSocket.getInputStream()));
-//			PrintWriter channelWriter = new PrintWriter(new OutputStreamWriter(channelData.getOutputStream()));
 
 			while (!clientSocket.isClosed()) {
 				String raw = clientReader.readLine();
